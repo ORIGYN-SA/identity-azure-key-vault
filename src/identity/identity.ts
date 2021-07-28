@@ -1,17 +1,24 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { CryptographyClient, KeyClient } from '@azure/keyvault-keys';
-import { SignIdentity, PublicKey } from '@dfinity/agent';
-import { BinaryBlob } from '@dfinity/candid';
+import { HttpAgentRequest, PublicKey, SignIdentity } from '@dfinity/agent';
+import { BinaryBlob, blobFromUint8Array } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import { Secp256k1PublicKey } from './secp256k1';
 import { createHash } from 'crypto';
-import { blobFromUint8Array } from '@dfinity/candid';
+import { requestIdOf } from '@dfinity/agent';
+import { blobFromBuffer } from '@dfinity/candid';
+import { Buffer } from 'buffer/';
+
+const domainSeparator = Buffer.from(new TextEncoder().encode('\x0Aic-request'));
 
 export class AzureKeyVaultSecp256k1IdentityOpts {
-  tenantId: string;
-  clientId: string;
-  vaultId: string;
-  keyId: string;
+  public constructor(
+    public readonly tenantId: string,
+    public readonly clientId: string,
+    public readonly vaultId: string,
+    public readonly keyId: string,
+  ) {
+  }
 }
 
 /**
@@ -34,21 +41,15 @@ export class AzureKeyVaultSecp256k1Identity extends SignIdentity {
     const key = await keyClient.getKey(keyId);
     const webKey = key.key!;
     const publicKey = Secp256k1PublicKey.fromJWK(webKey);
-    const principal = Principal.selfAuthenticating(publicKey.toDer());
     const cryptographyClient = new CryptographyClient(key.id!, credential);
 
-    return new this(principal, publicKey, cryptographyClient);
+    return new this(publicKey, cryptographyClient);
   }
 
   private constructor(
-    private readonly principal: Principal,
     private readonly publicKey: Secp256k1PublicKey,
     private readonly cryptographyClient: CryptographyClient) {
     super();
-  }
-
-  public getPrincipal(): Principal {
-    return this.principal;
   }
 
   public getPublicKey(): PublicKey {
@@ -64,5 +65,18 @@ export class AzureKeyVaultSecp256k1Identity extends SignIdentity {
       throw new Error(`Signature must be 64 bytes long (is ${result.length})`);
     }
     return blobFromUint8Array(result);
+  }
+
+  public async transformRequest(request: HttpAgentRequest): Promise<unknown> {
+    const { body, ...fields } = request;
+    const requestId = await requestIdOf(body);
+    return {
+      ...fields,
+      body: {
+        content: body,
+        sender_pubkey: this.getPublicKey().toDer(),
+        sender_sig: await this.sign(blobFromBuffer(Buffer.concat([domainSeparator, requestId]))),
+      },
+    };
   }
 }

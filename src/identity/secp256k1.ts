@@ -1,6 +1,6 @@
 import { PublicKey } from '@dfinity/agent';
 import { BinaryBlob, blobFromUint8Array, derBlobFromBlob, DerEncodedBlob } from '@dfinity/candid';
-import {JsonWebKey} from '@azure/keyvault-keys';
+import { JsonWebKey } from '@azure/keyvault-keys';
 
 // This implementation is adjusted from the Ed25519PublicKey.
 // The RAW_KEY_LENGTH and DER_PREFIX are modified accordingly
@@ -13,7 +13,7 @@ export class Secp256k1PublicKey implements PublicKey {
     rawKey.set([0x04], 0);
     rawKey.set(webKey.x!, 1);
     rawKey.set(webKey.y!, 33);
-    return new Secp256k1PublicKey(blobFromUint8Array(rawKey));
+    return this.fromRaw(blobFromUint8Array(rawKey));
   }
 
   public static fromRaw(rawKey: BinaryBlob): Secp256k1PublicKey {
