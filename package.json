@@ -10,6 +10,10 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --config \"./.eslintrc\""
   },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:ORIGYN-SA/identity-azure-key-vault.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
