@@ -1,12 +1,9 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import { CryptographyClient, KeyClient } from '@azure/keyvault-keys';
-import { HttpAgentRequest, PublicKey, SignIdentity } from '@dfinity/agent';
-import { BinaryBlob, blobFromUint8Array } from '@dfinity/candid';
-import { Principal } from '@dfinity/principal';
+import { HttpAgentRequest, PublicKey, requestIdOf, SignIdentity } from '@dfinity/agent';
+import { BinaryBlob, blobFromBuffer, blobFromUint8Array } from '@dfinity/candid';
 import { Secp256k1PublicKey } from './secp256k1';
 import { createHash } from 'crypto';
-import { requestIdOf } from '@dfinity/agent';
-import { blobFromBuffer } from '@dfinity/candid';
 import { Buffer } from 'buffer/';
 
 const domainSeparator = Buffer.from(new TextEncoder().encode('\x0Aic-request'));
