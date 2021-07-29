@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES2020",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -8,14 +8,15 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "./lib/esm",
     "baseUrl": "./",
     "incremental": true,
     "types": [
       "node",
       "jest"
     ],
-    "resolveJsonModule": true,
+    "moduleResolution": "node",
     "esModuleInterop": true
-  }
+  },
+  "exclude": ["examples/**", "dist/**", "lib/**"]
 }

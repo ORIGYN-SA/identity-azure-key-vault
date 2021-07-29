@@ -1,6 +1,10 @@
 src/
+examples/
+.idea/
 tsconfig.json
 tsconfig.build.json
 .prettierrc
 .eslintrc
 .eslintignore
+LICENSE
+README.md
