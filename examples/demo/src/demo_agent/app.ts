@@ -21,10 +21,10 @@ const init = async () => {
     console.log("Got principal: ", principal);
 
     agent.fetchRootKey().then(() => {
-        const dqueue = Actor.createActor(idlFactory, {agent, canisterId: process.env.CANISTER_ID});
+        const actor = Actor.createActor(idlFactory, {agent, canisterId: process.env.CANISTER_ID});
 
         console.log("Who Am I?");
-        dqueue.whoami().then(r => console.log("You are: ", r));
+        actor.whoami().then(r => console.log("You are: ", r));
     });
 };
 
