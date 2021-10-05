@@ -1,4 +1,4 @@
-# @origyn-sa/identity-azure-key-vault
+# @origyn/identity-azure-key-vault
 
 TypeScript library to support a Azure Key Vault identity for applications on the [Internet Computer](https://dfinity.org/).
 
@@ -13,7 +13,7 @@ Visit the [Dfinity Forum](https://forum.dfinity.org/) and [SDK Documentation](ht
 Using authentication:
 
 ```
-npm i --save @origyn-sa/identity-azure-key-vault
+npm i --save @origyn/identity-azure-key-vault
 ```
 
 ### In the node.js application:
@@ -21,7 +21,7 @@ npm i --save @origyn-sa/identity-azure-key-vault
 ```javascript
 import {config} from "dotenv";
 import {HttpAgent} from '@dfinity/agent';
-import {AzureKeyVaultSecp256k1Identity} from '@origyn-sa/identity-azure-key-vault'
+import {AzureKeyVaultSecp256k1Identity} from '@origyn/identity-azure-key-vault'
 
 config();
 
