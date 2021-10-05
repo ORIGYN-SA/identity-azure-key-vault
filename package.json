@@ -12,7 +12,6 @@
   "scripts": {
     "build": "tsc -b && tsc -p tsconfig-cjs.json",
     "build:watch": "tsc -b --watch",
-    "bundle": "npm run build",
     "release": "npm publish",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --config \"./.eslintrc\""
@@ -43,8 +42,8 @@
     "@dfinity/principal": "^0.10.1",
     "@dfinity/candid": "^0.10.1",
     "buffer": "^6.0.3",
-    "@azure/identity": "latest",
-    "@azure/keyvault-keys": "latest"
+    "@azure/identity": "^1.5.2",
+    "@azure/keyvault-keys": "^4.3.0"
   },
   "devDependencies": {
     "@jest/types": "^27.2.4",

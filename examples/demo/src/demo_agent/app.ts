@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Actor, HttpAgent } from '@dfinity/agent';
 import fetch from "cross-fetch";
-import { AzureKeyVaultSecp256k1Identity } from './src'
+import { AzureKeyVaultSecp256k1Identity } from '@origyn/identity-azure-key-vault'
 import { idlFactory } from "./idl";
 
 const {
@@ -38,8 +38,6 @@ const main = async () => {
       canisterId: String(CANISTER_ID)
     }
   );
-
-  await agent.fetchRootKey()
 
   console.log("Who Am I?");
   const iAm = await actor.whoami()
