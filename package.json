@@ -1,6 +1,6 @@
 {
   "name": "@origyn-sa/identity-azure-key-vault",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dfinity Azure Key Vault dependency.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
