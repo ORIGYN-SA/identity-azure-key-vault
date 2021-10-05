@@ -1,11 +1,19 @@
 import { PublicKey } from '@dfinity/agent';
-import {
-  BinaryBlob,
-  blobFromUint8Array,
-  derBlobFromBlob,
-  DerEncodedBlob,
-} from '@dfinity/candid';
+// import {
+//   BinaryBlob,
+//   blobFromUint8Array,
+//   derBlobFromBlob,
+//   DerEncodedBlob,
+// } from '@dfinity/candid';
 import { JsonWebKey } from '@azure/keyvault-keys';
+
+export function blobFromUint8Array(arr: Uint8Array): any {
+  return Buffer.from(arr);
+}
+
+export function derBlobFromBlob(blob: any): any {
+  return blob as any;
+}
 
 // This implementation is adjusted from the Ed25519PublicKey.
 // The RAW_KEY_LENGTH and DER_PREFIX are modified accordingly
@@ -21,11 +29,11 @@ export class Secp256k1PublicKey implements PublicKey {
     return this.fromRaw(blobFromUint8Array(rawKey));
   }
 
-  public static fromRaw(rawKey: BinaryBlob): Secp256k1PublicKey {
+  public static fromRaw(rawKey: any): Secp256k1PublicKey {
     return new Secp256k1PublicKey(rawKey);
   }
 
-  public static fromDer(derKey: BinaryBlob): Secp256k1PublicKey {
+  public static fromDer(derKey: any): Secp256k1PublicKey {
     return new Secp256k1PublicKey(this.derDecode(derKey));
   }
 
@@ -40,7 +48,7 @@ export class Secp256k1PublicKey implements PublicKey {
     0x00, // no padding
   ]);
 
-  private static derEncode(publicKey: BinaryBlob): DerEncodedBlob {
+  private static derEncode(publicKey: any): any {
     if (publicKey.byteLength !== Secp256k1PublicKey.RAW_KEY_LENGTH) {
       const bl = publicKey.byteLength;
       throw new TypeError(
@@ -55,7 +63,7 @@ export class Secp256k1PublicKey implements PublicKey {
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
-  private static derDecode(key: BinaryBlob): BinaryBlob {
+  private static derDecode(key: any): any {
     const expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength !== expectedLength) {
       const bl = key.byteLength;
@@ -75,20 +83,20 @@ export class Secp256k1PublicKey implements PublicKey {
     return rawKey;
   }
 
-  private readonly rawKey: BinaryBlob;
-  private readonly derKey: DerEncodedBlob;
+  private readonly rawKey: any;
+  private readonly derKey: any;
 
   // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  private constructor(key: BinaryBlob) {
+  private constructor(key: any) {
     this.rawKey = key;
     this.derKey = Secp256k1PublicKey.derEncode(key);
   }
 
-  public toDer(): DerEncodedBlob {
+  public toDer(): any {
     return this.derKey;
   }
 
-  public toRaw(): BinaryBlob {
+  public toRaw(): any {
     return this.rawKey;
   }
 }

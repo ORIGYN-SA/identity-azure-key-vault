@@ -1,31 +1,50 @@
-import {config} from "dotenv";
-import {Actor, HttpAgent} from '@dfinity/agent';
-import fetch = require("node-fetch");
-import {AzureKeyVaultSecp256k1Identity} from '@origyn-sa/identity-azure-key-vault'
-import {idlFactory} from "./idl";
+import "dotenv/config";
+import { Actor, HttpAgent } from '@dfinity/agent';
+import fetch from "cross-fetch";
+import { AzureKeyVaultSecp256k1Identity } from './src'
+import { idlFactory } from "./idl";
 
-config();
+const {
+  AZURE_CLIENT_ID,
+  AZURE_KEY_ID,
+  AZURE_VAULT_ID,
+  AZURE_TENANT_ID,
+  CANISTER_ID,
+} = process.env
 
-const init = async () => {
-    const identity = await AzureKeyVaultSecp256k1Identity.create({
-        clientId: process.env.AZURE_CLIENT_ID,
-        keyId: process.env.AZURE_KEY_ID,
-        vaultId: process.env.AZURE_VAULT_ID,
-        tenantId: process.env.AZURE_TENANT_ID,
-    });
+const main = async () => {
+  const identity = await AzureKeyVaultSecp256k1Identity.create({
+    clientId: String(AZURE_CLIENT_ID),
+    keyId: String(AZURE_KEY_ID),
+    vaultId: String(AZURE_VAULT_ID),
+    tenantId: String(AZURE_TENANT_ID),
+  });
 
-    // @ts-ignore
-    const agent = new HttpAgent({identity: identity!, host: "http://127.0.0.1:8000", fetch: fetch});
-    const principal = await agent.getPrincipal();
+  const agent = new HttpAgent({
+    identity: identity!,
+    host: "http://127.0.0.1:8000",
+    fetch
+  });
+  const principal = await agent.getPrincipal();
 
-    console.log("Got principal: ", principal);
+  console.log("Got principal: ", principal);
 
-    agent.fetchRootKey().then(() => {
-        const actor = Actor.createActor(idlFactory, {agent, canisterId: process.env.CANISTER_ID});
+  await agent.fetchRootKey()
 
-        console.log("Who Am I?");
-        actor.whoami().then(r => console.log("You are: ", r));
-    });
+  const actor = Actor.createActor(
+    idlFactory,
+    {
+      agent,
+      canisterId: String(CANISTER_ID)
+    }
+  );
+
+  await agent.fetchRootKey()
+
+  console.log("Who Am I?");
+  const iAm = await actor.whoami()
+
+  console.log("You are: ", iAm)
 };
 
-init().then(() => {});
+main()
