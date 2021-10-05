@@ -1,6 +1,13 @@
-import { PublicKey } from '@dfinity/agent';
-import { BinaryBlob, blobFromUint8Array, derBlobFromBlob, DerEncodedBlob } from '@dfinity/candid';
+import { PublicKey, DerEncodedPublicKey } from '@dfinity/agent';
 import { JsonWebKey } from '@azure/keyvault-keys';
+
+export function blobFromUint8Array(arr: Uint8Array): Buffer {
+  return Buffer.from(arr);
+}
+
+export function derBlobFromBlob(blob: ArrayBuffer): DerEncodedPublicKey {
+  return blob as DerEncodedPublicKey;
+}
 
 // This implementation is adjusted from the Ed25519PublicKey.
 // The RAW_KEY_LENGTH and DER_PREFIX are modified accordingly
@@ -16,11 +23,11 @@ export class Secp256k1PublicKey implements PublicKey {
     return this.fromRaw(blobFromUint8Array(rawKey));
   }
 
-  public static fromRaw(rawKey: BinaryBlob): Secp256k1PublicKey {
+  public static fromRaw(rawKey: Buffer): Secp256k1PublicKey {
     return new Secp256k1PublicKey(rawKey);
   }
 
-  public static fromDer(derKey: BinaryBlob): Secp256k1PublicKey {
+  public static fromDer(derKey: Buffer): Secp256k1PublicKey {
     return new Secp256k1PublicKey(this.derDecode(derKey));
   }
 
@@ -35,7 +42,7 @@ export class Secp256k1PublicKey implements PublicKey {
     0x00, // no padding
   ]);
 
-  private static derEncode(publicKey: BinaryBlob): DerEncodedBlob {
+  private static derEncode(publicKey: Buffer): DerEncodedPublicKey {
     if (publicKey.byteLength !== Secp256k1PublicKey.RAW_KEY_LENGTH) {
       const bl = publicKey.byteLength;
       throw new TypeError(
@@ -50,7 +57,7 @@ export class Secp256k1PublicKey implements PublicKey {
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
-  private static derDecode(key: BinaryBlob): BinaryBlob {
+  private static derDecode(key: Buffer): Buffer {
     const expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength !== expectedLength) {
       const bl = key.byteLength;
@@ -60,30 +67,31 @@ export class Secp256k1PublicKey implements PublicKey {
     }
 
     const rawKey = blobFromUint8Array(key.subarray(Secp256k1PublicKey.DER_PREFIX.length));
-    if (!this.derEncode(rawKey).equals(key)) {
+
+    if (!((this.derEncode(rawKey) as ArrayBuffer) as Buffer).equals(key)) {
       throw new TypeError(
         'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key ' +
-          `must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}`,
+        `must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}`,
       );
     }
 
     return rawKey;
   }
 
-  private readonly rawKey: BinaryBlob;
-  private readonly derKey: DerEncodedBlob;
+  private readonly rawKey: Buffer;
+  private readonly derKey: DerEncodedPublicKey;
 
   // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  private constructor(key: BinaryBlob) {
+  private constructor(key: Buffer) {
     this.rawKey = key;
     this.derKey = Secp256k1PublicKey.derEncode(key);
   }
 
-  public toDer(): DerEncodedBlob {
+  public toDer(): DerEncodedPublicKey {
     return this.derKey;
   }
 
-  public toRaw(): BinaryBlob {
+  public toRaw(): Buffer {
     return this.rawKey;
   }
 }

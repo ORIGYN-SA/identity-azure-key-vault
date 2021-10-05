@@ -18,5 +18,14 @@
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "exclude": ["examples/**", "dist/**", "lib/**"]
+  "exclude": [
+    "examples/**",
+    "dist/**",
+    "lib/**"
+  ],
+  "ts-node": {
+    "ignore": [
+      "/node_modules/(?!node-fetch)"
+    ]
+  }
 }

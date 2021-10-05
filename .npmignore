@@ -8,3 +8,4 @@ tsconfig.build.json
 .eslintignore
 LICENSE
 README.md
+.npmrc
