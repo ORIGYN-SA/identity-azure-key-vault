@@ -1,8 +1,8 @@
-import "dotenv/config";
+import 'dotenv/config';
 import { Actor, HttpAgent } from '@dfinity/agent';
-import fetch from "cross-fetch";
+import fetch from 'cross-fetch';
 import { AzureKeyVaultSecp256k1Identity } from '@origyn/identity-azure-key-vault'
-import { idlFactory } from "./idl";
+import { idlFactory } from './idl';
 
 const {
   AZURE_CLIENT_ID,

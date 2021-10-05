@@ -5,8 +5,8 @@ export function blobFromUint8Array(arr: Uint8Array): Buffer {
   return Buffer.from(arr);
 }
 
-export function derBlobFromBlob(blob: Buffer): Buffer {
-  return blob as any;
+export function derBlobFromBlob(blob: ArrayBuffer): DerEncodedPublicKey {
+  return blob as DerEncodedPublicKey;
 }
 
 // This implementation is adjusted from the Ed25519PublicKey.
@@ -42,7 +42,7 @@ export class Secp256k1PublicKey implements PublicKey {
     0x00, // no padding
   ]);
 
-  private static derEncode(publicKey: Buffer): any {
+  private static derEncode(publicKey: Buffer): DerEncodedPublicKey {
     if (publicKey.byteLength !== Secp256k1PublicKey.RAW_KEY_LENGTH) {
       const bl = publicKey.byteLength;
       throw new TypeError(
@@ -57,7 +57,7 @@ export class Secp256k1PublicKey implements PublicKey {
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
-  private static derDecode(key: Buffer): any {
+  private static derDecode(key: Buffer): Buffer {
     const expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength !== expectedLength) {
       const bl = key.byteLength;
@@ -67,7 +67,8 @@ export class Secp256k1PublicKey implements PublicKey {
     }
 
     const rawKey = blobFromUint8Array(key.subarray(Secp256k1PublicKey.DER_PREFIX.length));
-    if (!this.derEncode(rawKey).equals(key)) {
+
+    if (!((this.derEncode(rawKey) as ArrayBuffer) as Buffer).equals(key)) {
       throw new TypeError(
         'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key ' +
         `must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}`,
