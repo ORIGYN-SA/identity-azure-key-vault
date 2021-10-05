@@ -1,11 +1,11 @@
-import { PublicKey } from '@dfinity/agent';
+import { PublicKey, DerEncodedPublicKey } from '@dfinity/agent';
 import { JsonWebKey } from '@azure/keyvault-keys';
 
-export function blobFromUint8Array(arr: Uint8Array): any {
+export function blobFromUint8Array(arr: Uint8Array): Buffer {
   return Buffer.from(arr);
 }
 
-export function derBlobFromBlob(blob: any): any {
+export function derBlobFromBlob(blob: Buffer): Buffer {
   return blob as any;
 }
 
@@ -23,11 +23,11 @@ export class Secp256k1PublicKey implements PublicKey {
     return this.fromRaw(blobFromUint8Array(rawKey));
   }
 
-  public static fromRaw(rawKey: any): Secp256k1PublicKey {
+  public static fromRaw(rawKey: Buffer): Secp256k1PublicKey {
     return new Secp256k1PublicKey(rawKey);
   }
 
-  public static fromDer(derKey: any): Secp256k1PublicKey {
+  public static fromDer(derKey: Buffer): Secp256k1PublicKey {
     return new Secp256k1PublicKey(this.derDecode(derKey));
   }
 
@@ -42,7 +42,7 @@ export class Secp256k1PublicKey implements PublicKey {
     0x00, // no padding
   ]);
 
-  private static derEncode(publicKey: any): any {
+  private static derEncode(publicKey: Buffer): any {
     if (publicKey.byteLength !== Secp256k1PublicKey.RAW_KEY_LENGTH) {
       const bl = publicKey.byteLength;
       throw new TypeError(
@@ -57,7 +57,7 @@ export class Secp256k1PublicKey implements PublicKey {
     return derBlobFromBlob(blobFromUint8Array(derPublicKey));
   }
 
-  private static derDecode(key: any): any {
+  private static derDecode(key: Buffer): any {
     const expectedLength = Secp256k1PublicKey.DER_PREFIX.length + Secp256k1PublicKey.RAW_KEY_LENGTH;
     if (key.byteLength !== expectedLength) {
       const bl = key.byteLength;
@@ -70,27 +70,27 @@ export class Secp256k1PublicKey implements PublicKey {
     if (!this.derEncode(rawKey).equals(key)) {
       throw new TypeError(
         'secp256k1 DER-encoded public key is invalid. A valid secp256k1 DER-encoded public key ' +
-          `must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}`,
+        `must have the following prefix: ${Secp256k1PublicKey.DER_PREFIX}`,
       );
     }
 
     return rawKey;
   }
 
-  private readonly rawKey: any;
-  private readonly derKey: any;
+  private readonly rawKey: Buffer;
+  private readonly derKey: DerEncodedPublicKey;
 
   // `fromRaw` and `fromDer` should be used for instantiation, not this constructor.
-  private constructor(key: any) {
+  private constructor(key: Buffer) {
     this.rawKey = key;
     this.derKey = Secp256k1PublicKey.derEncode(key);
   }
 
-  public toDer(): any {
+  public toDer(): DerEncodedPublicKey {
     return this.derKey;
   }
 
-  public toRaw(): any {
+  public toRaw(): Buffer {
     return this.rawKey;
   }
 }

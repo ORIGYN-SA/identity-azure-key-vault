@@ -13,8 +13,8 @@ import { Buffer } from 'buffer/';
 
 const domainSeparator = Buffer.from(new TextEncoder().encode('\x0Aic-request'));
 const blobFromBuffer = buffer => Uint8Array.from(buffer).buffer
-export function blobFromUint8Array(arr): any {
-  return Buffer.from(arr) as any;
+export const blobFromUint8Array = (arr: Uint8Array): ArrayBuffer => {
+  return Buffer.from(arr);
 }
 
 export class AzureKeyVaultSecp256k1IdentityOpts {
@@ -23,7 +23,7 @@ export class AzureKeyVaultSecp256k1IdentityOpts {
     public readonly clientId: string,
     public readonly vaultId: string,
     public readonly keyId: string,
-  ) {}
+  ) { }
 }
 
 /**
